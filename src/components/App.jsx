@@ -4,6 +4,7 @@ import Input from './input/input';
 import ContactList from './contact-list/contact-list';
 import css from './App.module.css';
 import { nanoid } from 'nanoid';
+import JsLocalStorage from './JsLocalStorage';
 
 export class App extends Component {
   state = {
@@ -23,9 +24,7 @@ export class App extends Component {
 
   filterContacts = () =>
     this.state.contacts.filter(contact =>
-      contact.name
-        .toLocaleLowerCase()
-        .includes(this.state.filter.toLocaleLowerCase()),
+      contact.name.toLowerCase().includes(this.state.filter.toLowerCase()),
     );
 
   deleteContact = id => {
@@ -74,6 +73,18 @@ export class App extends Component {
         />
       </div>
     );
+  }
+  componentDidMount(key = 'contacts') {
+    const lsState = JsLocalStorage.load(key);
+    if (localStorage.getItem(key) !== null) {
+      this.setState(() => ({
+        contacts: [...lsState],
+      }));
+    }
+  }
+
+  componentDidUpdate({ key = 'contacts' }) {
+    JsLocalStorage.save(key, this.state.contacts);
   }
 }
 
